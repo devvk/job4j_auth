@@ -6,8 +6,10 @@ REST-сервис для управления пользователями.
 
 - Java 21
 - Spring Boot
+- Spring Web MVC
 - Spring Data JPA
 - PostgreSQL
+- Liquibase
 - Maven
 - Lombok
 
