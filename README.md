@@ -53,8 +53,49 @@ PUT /persons/{id}
 DELETE /persons/{id}
 ```
 
+
 ## Запуск
 
 ```bash
 ./mvnw spring-boot:run
+```
+
+## Примеры curl-запросов
+
+### Получить всех пользователей
+
+```bash
+curl -i http://localhost:8080/persons
+```
+
+### Получить пользователя по id
+
+```bash
+curl -i http://localhost:8080/persons/1
+```
+
+### Создать пользователя
+
+```bash
+curl -i \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{"login":"test","password":"123"}' \
+  http://localhost:8080/persons
+```
+
+### Обновить пользователя
+
+```bash
+curl -i \
+  -H 'Content-Type: application/json' \
+  -X PUT \
+  -d '{"login":"test-updated","password":"456"}' \
+  http://localhost:8080/persons/1
+```
+
+### Удалить пользователя
+
+```bash
+curl -i -X DELETE http://localhost:8080/persons/1
 ```
