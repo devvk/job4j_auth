@@ -3,6 +3,7 @@ package ru.job4j.auth.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.auth.model.Person;
 import ru.job4j.auth.service.PersonService;
@@ -15,6 +16,7 @@ import java.util.List;
 public class PersonController {
 
     private final PersonService personService;
+    private final PasswordEncoder encoder;
 
     @GetMapping
     public List<Person> findAll() {
@@ -28,8 +30,9 @@ public class PersonController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    @PostMapping("/sign-up")
+    public ResponseEntity<Person> signUp(@RequestBody Person person) {
+        person.setPassword(encoder.encode(person.getPassword()));
         return new ResponseEntity<>(personService.create(person), HttpStatus.CREATED);
     }
 
