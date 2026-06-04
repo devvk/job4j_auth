@@ -19,7 +19,9 @@ public class PersonController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<Person> signUp(@RequestBody Person person) {
-        return new ResponseEntity<>(personService.create(person), HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(personService.create(person));
     }
 
     @GetMapping
@@ -35,14 +37,13 @@ public class PersonController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable int id, @RequestBody Person person) {
         personService.update(id, person);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> patch(@PathVariable int id,
-                                      @RequestBody PersonPatchDto dto) {
+    public ResponseEntity<Void> patch(@PathVariable int id, @RequestBody PersonPatchDto dto) {
         personService.patch(id, dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
