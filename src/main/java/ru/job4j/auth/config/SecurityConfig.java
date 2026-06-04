@@ -28,10 +28,17 @@ public class SecurityConfig {
 
     /**
      * Цепочка фильтров Spring Security.
-     * Все HTTP-запросы сначала проходят через неё, и только потом попадают в контроллер.
-     * @param http
-     * @param authenticationManager
-     * @return
+     * Все HTTP-запросы сначала проходят через неё и только потом попадают в контроллер.
+     * Конфигурация:
+     * - отключает CSRF для REST API;
+     * - запрещает использование HTTP-сессий (STATELESS);
+     * - разрешает доступ к /persons/sign-up и /login без авторизации;
+     * - требует JWT для остальных endpoints;
+     * - подключает фильтры аутентификации и авторизации JWT.
+     *
+     * @param http объект настройки Spring Security
+     * @param authenticationManager менеджер проверки login/password
+     * @return настроенная цепочка фильтров Spring Security
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) {
@@ -49,6 +56,16 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Создаёт AuthenticationManager.
+     * AuthenticationManager отвечает за проверку login/password.
+     * DaoAuthenticationProvider:
+     * - загружает пользователя через UserDetailsService;
+     * - получает Bcrypt-хеш пароля из БД;
+     * - сравнивает его с паролем из запроса через PasswordEncoder.
+     *
+     * @return настроенный AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
