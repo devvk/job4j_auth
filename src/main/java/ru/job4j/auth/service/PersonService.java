@@ -1,6 +1,7 @@
 package ru.job4j.auth.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.auth.model.Person;
 import ru.job4j.auth.repository.PersonRepository;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Person> findAll() {
         return personRepository.findAll();
@@ -23,13 +25,22 @@ public class PersonService {
     }
 
     public Person create(Person person) {
+        person.setPassword(passwordEncoder.encode(person.getPassword()));
         return personRepository.save(person);
     }
 
     public boolean update(int id, Person person) {
-        if (!personRepository.existsById(id)) {
+        Person existingPerson = personRepository.findById(id).orElse(null);
+        if (existingPerson == null) {
             return false;
         }
+
+        if (person.getPassword() != null && !person.getPassword().isBlank()) {
+            person.setPassword(passwordEncoder.encode(person.getPassword()));
+        } else {
+            person.setPassword(existingPerson.getPassword());
+        }
+
         person.setId(id);
         personRepository.save(person);
         return true;
