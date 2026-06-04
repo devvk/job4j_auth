@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.auth.dto.PersonPatchDto;
 import ru.job4j.auth.model.Person;
 import ru.job4j.auth.service.PersonService;
 
@@ -16,34 +17,37 @@ public class PersonController {
 
     private final PersonService personService;
 
+    @PostMapping("/sign-up")
+    public ResponseEntity<Person> signUp(@RequestBody Person person) {
+        return new ResponseEntity<>(personService.create(person), HttpStatus.CREATED);
+    }
+
     @GetMapping
     public List<Person> findAll() {
         return personService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Person> findById(@PathVariable int id) {
-        return personService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person) {
-        return new ResponseEntity<>(personService.create(person), HttpStatus.CREATED);
+    public Person findById(@PathVariable int id) {
+        return personService.findById(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable int id, @RequestBody Person person) {
-        return personService.update(id, person)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+        personService.update(id, person);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> patch(@PathVariable int id,
+                                      @RequestBody PersonPatchDto dto) {
+        personService.patch(id, dto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        return personService.delete(id)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+        personService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
