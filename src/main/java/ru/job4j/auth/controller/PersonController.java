@@ -1,5 +1,6 @@
 package ru.job4j.auth.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class PersonController {
     private final PersonService personService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person) {
+    public ResponseEntity<Person> signUp(@Valid @RequestBody Person person) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(personService.create(person));
@@ -35,13 +36,13 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable int id, @RequestBody Person person) {
+    public ResponseEntity<Void> update(@PathVariable int id, @Valid @RequestBody Person person) {
         personService.update(id, person);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> patch(@PathVariable int id, @RequestBody PersonPatchDto dto) {
+    public ResponseEntity<Void> patch(@PathVariable int id, @Valid @RequestBody PersonPatchDto dto) {
         personService.patch(id, dto);
         return ResponseEntity.noContent().build();
     }

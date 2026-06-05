@@ -28,12 +28,6 @@ public class PersonService {
     }
 
     public Person create(Person person) {
-        if (person.getLogin() == null || person.getLogin().isBlank()) {
-            throw new IllegalArgumentException("Login must not be empty");
-        }
-        if (person.getPassword() == null || person.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Password must not be empty");
-        }
         if (personRepository.findByLogin(person.getLogin()).isPresent()) {
             throw new LoginAlreadyExistsException(person.getLogin());
         }
@@ -44,13 +38,6 @@ public class PersonService {
     public void update(int id, Person person) {
         personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
-
-        if (person.getLogin() == null || person.getLogin().isBlank()) {
-            throw new IllegalArgumentException("Login must not be empty");
-        }
-        if (person.getPassword() == null || person.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Password must not be empty");
-        }
         personRepository.findByLogin(person.getLogin())
                 .filter(p -> !p.getId().equals(id))
                 .ifPresent(p -> {
@@ -64,11 +51,7 @@ public class PersonService {
     public void patch(int id, PersonPatchDto personPatchDto) {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
-        var password = personPatchDto.password();
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password must not be empty");
-        }
-        person.setPassword(passwordEncoder.encode(password));
+        person.setPassword(passwordEncoder.encode(personPatchDto.password()));
         personRepository.save(person);
     }
 
