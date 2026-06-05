@@ -64,10 +64,11 @@ public class PersonService {
     public void patch(int id, PersonPatchDto personPatchDto) {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
-        if (personPatchDto.getPassword() == null || personPatchDto.getPassword().isBlank()) {
+        var password = personPatchDto.password();
+        if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("Password must not be empty");
         }
-        person.setPassword(passwordEncoder.encode(personPatchDto.getPassword()));
+        person.setPassword(passwordEncoder.encode(password));
         personRepository.save(person);
     }
 
