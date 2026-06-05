@@ -1,5 +1,6 @@
 package ru.job4j.auth.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +39,21 @@ public class GlobalExceptionHandler {
                         .map(error -> Map.of(
                                 "field", error.getField(),
                                 "message", Objects.requireNonNull(error.getDefaultMessage())
+                        ))
+                        .toList()
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolation(ConstraintViolationException e) {
+        return ResponseEntity.badRequest().body(
+                e.getConstraintViolations().stream()
+                        .map(v -> Map.of(
+                                "field", StreamSupport.stream(v.getPropertyPath().spliterator(), false)
+                                        .reduce((first, second) -> second)
+                                        .map(Object::toString)
+                                        .orElse("parameter"),
+                                "message", v.getMessage()
                         ))
                         .toList()
         );
